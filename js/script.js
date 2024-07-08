@@ -32,12 +32,12 @@ async function findProfessors() {
     }
 
     // Filter professors by class ID
-    const matchingProfessors = professorData.filter(professor =>
-        professor.ratingList.some(rating => rating.class_id.trim() === classIdInput)
-    );
+    // const matchingProfessors = professorData.filter(professor =>
+    //     professor.ratingList.some(rating => rating.class_id.trim() === classIdInput)
+    // );
 
     // Parse input to get multiple class IDs
-    const classIds = classIdInput.split(/[\s,]+/).map(id => id.trim()).filter(id => id !== '');
+    const classIds = classIdInput.split(/[\s,]+/).map(id => id.trim().toUpperCase()).filter(id => id !== '');
 
     classIds.forEach(classId => {
         // Filter professors by class ID
@@ -105,7 +105,7 @@ async function findProfessors() {
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${professor.name}</td>
+                    <td><a href="https://www.ratemyprofessors.com/professor/${professor.id}" target="_blank">${professor.name}</a></td>
                     <td>${latestRating.date}</td>
                     <td>${qualityAvg.toFixed(1)}</td>
                     <td>${difficultyAvg.toFixed(1)}</td>
