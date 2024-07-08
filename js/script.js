@@ -70,19 +70,19 @@ async function findProfessors() {
             const headerRow = document.createElement('tr');
             headerRow.innerHTML = `
                 <th onclick="sortTable(event, 0)">Professor</th>
-                <th onclick="sortTable(event, 1)">Latest Rating Date</th>
-                <th onclick="sortTable(event, 2)">Average Quality</th>
-                <th onclick="sortTable(event, 3)">Average Difficulty</th>
-                <th onclick="sortTable(event, 4)">Quality 5</th>
-                <th onclick="sortTable(event, 5)">Quality 4</th>
-                <th onclick="sortTable(event, 6)">Quality 3</th>
-                <th onclick="sortTable(event, 7)">Quality 2</th>
-                <th onclick="sortTable(event, 8)">Quality 1</th>
-                <th onclick="sortTable(event, 9)">Difficulty 5</th>
-                <th onclick="sortTable(event, 10)">Difficulty 4</th>
-                <th onclick="sortTable(event, 11)">Difficulty 3</th>
-                <th onclick="sortTable(event, 12)">Difficulty 2</th>
-                <th onclick="sortTable(event, 13)">Difficulty 1</th>
+                <th onclick="sortTable(event, 1)">Latest Date</th>
+                <th onclick="sortTable(event, 2)">Avg. Quality</th>
+                <th onclick="sortTable(event, 3)">Avg. Difficulty</th>
+                <th onclick="sortTable(event, 4)">Qual 5</th>
+                <th onclick="sortTable(event, 5)">Qual 4</th>
+                <th onclick="sortTable(event, 6)">Qual 3</th>
+                <th onclick="sortTable(event, 7)">Qual 2</th>
+                <th onclick="sortTable(event, 8)">Qual 1</th>
+                <th onclick="sortTable(event, 9)">Diff 5</th>
+                <th onclick="sortTable(event, 10)">Diff 4</th>
+                <th onclick="sortTable(event, 11)">Diff 3</th>
+                <th onclick="sortTable(event, 12)">Diff 2</th>
+                <th onclick="sortTable(event, 13)">Diff 1</th>
             `;
             table.appendChild(headerRow);
 
