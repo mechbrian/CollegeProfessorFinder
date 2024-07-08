@@ -9,8 +9,8 @@
 <body>
     <h1>Professor Finder</h1>
     <div>
-        <label for="classIdInput">Enter Class IDs (separated by commas, spaces, or plus signs):</label>
-        <input type="text" id="classIdInput">
+        <label for="classIdInput">Enter Class IDs:</label>
+        <input type="text" id="classIdInput" onkeypress="handleKeyPress(event)">
         <button onclick="findProfessors()">Search</button>
     </div>
     <div id="results"></div>

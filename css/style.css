@@ -18,7 +18,7 @@ h1 {
 .class-group h2 {
     background-color: #f0f0f0;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #000000;
     cursor: pointer;
 }
 
@@ -26,17 +26,27 @@ h1 {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #000000;
 }
 
 .professor-table th, .professor-table td {
-    border: 1px solid #ddd;
+    border: 1px solid #000000;
     padding: 8px;
     text-align: left;
     cursor: pointer;
 }
 
 .professor-table th {
-    background-color: #f2f2f2;
+    background-color: #000000;
     font-weight: bold;
+}
+
+.professor-table tr {
+    border-bottom: 1px solid #000000;
+    text-align: center;
+    background-color: aquamarine;
+}
+
+.professor-table tr:last-child {
+    border-bottom: none;
 }

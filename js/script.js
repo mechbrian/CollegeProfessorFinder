@@ -36,7 +36,6 @@ async function findProfessors() {
         professor.ratingList.some(rating => rating.class_id.trim() === classIdInput)
     );
 
-    
     // Parse input to get multiple class IDs
     const classIds = classIdInput.split(/[\s,]+/).map(id => id.trim()).filter(id => id !== '');
 
@@ -141,14 +140,22 @@ function sortTable(event, columnIndex) {
     const rowsArray = Array.from(tbody.querySelectorAll('tr:nth-child(n+2)'));
 
     const isNumericColumn = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].includes(columnIndex);
+    const isDateColumn = columnIndex === 1;
     const isAscending = header.getAttribute('data-order') === 'asc';
 
     rowsArray.sort((rowA, rowB) => {
-        const cellA = rowA.children[columnIndex].innerText;
-        const cellB = rowB.children[columnIndex].innerText;
+        let valueA = rowA.children[columnIndex].innerText;
+        let valueB = rowB.children[columnIndex].innerText;
 
-        const valueA = isNumericColumn ? parseFloat(cellA) : cellA;
-        const valueB = isNumericColumn ? parseFloat(cellB) : cellB;
+        if (isDateColumn){           
+            valueA = new Date(parseDate(valueA));
+            valueB = new Date(parseDate(valueB));
+            console.log(valueA.Date);
+            console.log(valueB);
+        }else if(isNumericColumn){
+            valueA = parseFloat(valueA);
+            valueB = parseFloat(valueB);
+        }
 
         if (valueA < valueB) return isAscending ? -1 : 1;
         if (valueA > valueB) return isAscending ? 1 : -1;
@@ -158,4 +165,23 @@ function sortTable(event, columnIndex) {
     rowsArray.forEach(row => tbody.appendChild(row));
 
     header.setAttribute('data-order', isAscending ? 'desc' : 'asc');
+}
+
+// Function to parse date strings like "Jun 5th, 2024"
+function parseDate(dateString) {
+    const [month, dayWithSuffix, year] = dateString.replace(',', '').split(' ');
+    // Remove the "th", "rd", "nd", or "st" suffix
+    const day = dayWithSuffix.slice(0,-2);
+    const months = {
+        Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+        Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
+    };    
+    return `${year}-${months[month]}-${day.padStart(2, '0')}`;
+}
+
+// Function to handle key press event
+function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+        findProfessors();
+    }
 }
