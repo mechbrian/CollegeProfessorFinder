@@ -36,31 +36,126 @@ async function findProfessors() {
         professor.ratingList.some(rating => rating.class_id.trim() === classIdInput)
     );
 
-    // Display matching professors
-    if (matchingProfessors.length > 0) {
-        matchingProfessors.forEach(professor => {
-            const professorDiv = document.createElement('div');
-            professorDiv.classList.add('professor');
-            professorDiv.innerHTML = `<h2>${professor.name}</h2>`;
-            const ratingsList = document.createElement('ul');
+    
+    // Parse input to get multiple class IDs
+    const classIds = classIdInput.split(/[\s,]+/).map(id => id.trim()).filter(id => id !== '');
 
-            professor.ratingList.forEach(rating => {
-                if (rating.class_id.trim() === classIdInput) {
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `
-                        <strong>Date:</strong> ${rating.date} <br>
-                        <strong>Quality:</strong> ${rating.rating_quality} <br>
-                        <strong>Difficulty:</strong> ${rating.rating_difficulty} <br>
-                        <strong>Comment:</strong> ${rating.comment}
-                    `;
-                    ratingsList.appendChild(listItem);
-                }
+    classIds.forEach(classId => {
+        // Filter professors by class ID
+        const matchingProfessors = professorData.filter(professor =>
+            professor.ratingList.some(rating => rating.class_id.trim() === classId)
+        );
+
+        // Create a group for each class ID
+        const classGroup = document.createElement('div');
+        classGroup.classList.add('class-group');
+
+        const groupHeader = document.createElement('h2');
+        groupHeader.textContent = `Course ID: ${classId}`;
+        groupHeader.style.cursor = 'pointer';
+        groupHeader.onclick = () => {
+            const groupContent = groupHeader.nextElementSibling;
+            groupContent.style.display = groupContent.style.display === 'none' ? 'block' : 'none';
+        };
+        classGroup.appendChild(groupHeader);
+
+        const groupContent = document.createElement('div');
+        groupContent.style.display = 'none';
+        classGroup.appendChild(groupContent);
+
+        // Display matching professors
+        if (matchingProfessors.length > 0) {
+            const table = document.createElement('table');
+            table.classList.add('professor-table');
+
+            const headerRow = document.createElement('tr');
+            headerRow.innerHTML = `
+                <th onclick="sortTable(event, 0)">Professor</th>
+                <th onclick="sortTable(event, 1)">Latest Rating Date</th>
+                <th onclick="sortTable(event, 2)">Average Quality</th>
+                <th onclick="sortTable(event, 3)">Average Difficulty</th>
+                <th onclick="sortTable(event, 4)">Quality 5</th>
+                <th onclick="sortTable(event, 5)">Quality 4</th>
+                <th onclick="sortTable(event, 6)">Quality 3</th>
+                <th onclick="sortTable(event, 7)">Quality 2</th>
+                <th onclick="sortTable(event, 8)">Quality 1</th>
+                <th onclick="sortTable(event, 9)">Difficulty 5</th>
+                <th onclick="sortTable(event, 10)">Difficulty 4</th>
+                <th onclick="sortTable(event, 11)">Difficulty 3</th>
+                <th onclick="sortTable(event, 12)">Difficulty 2</th>
+                <th onclick="sortTable(event, 13)">Difficulty 1</th>
+            `;
+            table.appendChild(headerRow);
+
+            matchingProfessors.forEach(professor => {
+                const latestRating = professor.ratingList.filter(rating => rating.class_id.trim() === classId)
+                                                         .reduce((latest, rating) => {
+                                                             return new Date(latest.date) > new Date(rating.date) ? latest : rating;
+                                                         });
+
+                const ratings = professor.ratingList.filter(rating => rating.class_id.trim() === classId);
+                const qualityAvg = ratings.reduce((sum, rating) => sum + parseFloat(rating.rating_quality), 0) / ratings.length;
+                const difficultyAvg = ratings.reduce((sum, rating) => sum + parseFloat(rating.rating_difficulty), 0) / ratings.length;
+                const qualityCounts = [0, 0, 0, 0, 0];
+                const difficultyCounts = [0, 0, 0, 0, 0];
+
+                ratings.forEach(rating => {
+                    qualityCounts[parseInt(rating.rating_quality) - 1]++;
+                    difficultyCounts[parseInt(rating.rating_difficulty) - 1]++;
+                });
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${professor.name}</td>
+                    <td>${latestRating.date}</td>
+                    <td>${qualityAvg.toFixed(1)}</td>
+                    <td>${difficultyAvg.toFixed(1)}</td>
+                    <td>${qualityCounts[4]}</td>
+                    <td>${qualityCounts[3]}</td>
+                    <td>${qualityCounts[2]}</td>
+                    <td>${qualityCounts[1]}</td>
+                    <td>${qualityCounts[0]}</td>
+                    <td>${difficultyCounts[4]}</td>
+                    <td>${difficultyCounts[3]}</td>
+                    <td>${difficultyCounts[2]}</td>
+                    <td>${difficultyCounts[1]}</td>
+                    <td>${difficultyCounts[0]}</td>
+                `;
+                table.appendChild(row);
             });
 
-            professorDiv.appendChild(ratingsList);
-            resultsDiv.appendChild(professorDiv);
-        });
-    } else {
-        resultsDiv.textContent = 'No professors found for this class ID.';
-    }
+            groupContent.appendChild(table);
+        } else {
+            groupContent.textContent = 'No professors found for this class ID.';
+        }
+
+        resultsDiv.appendChild(classGroup);
+    });
+}
+
+// Function to sort the table based on column index
+function sortTable(event, columnIndex) {
+    const header = event.target;
+    const table = header.closest('table');
+    const tbody = table.querySelector('tbody') || table;
+    const rowsArray = Array.from(tbody.querySelectorAll('tr:nth-child(n+2)'));
+
+    const isNumericColumn = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].includes(columnIndex);
+    const isAscending = header.getAttribute('data-order') === 'asc';
+
+    rowsArray.sort((rowA, rowB) => {
+        const cellA = rowA.children[columnIndex].innerText;
+        const cellB = rowB.children[columnIndex].innerText;
+
+        const valueA = isNumericColumn ? parseFloat(cellA) : cellA;
+        const valueB = isNumericColumn ? parseFloat(cellB) : cellB;
+
+        if (valueA < valueB) return isAscending ? -1 : 1;
+        if (valueA > valueB) return isAscending ? 1 : -1;
+        return 0;
+    });
+
+    rowsArray.forEach(row => tbody.appendChild(row));
+
+    header.setAttribute('data-order', isAscending ? 'desc' : 'asc');
 }
